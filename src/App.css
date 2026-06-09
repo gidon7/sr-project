@@ -1,0 +1,55 @@
+.container {
+  max-width: 36rem;
+  padding: 2rem;
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  margin: 0;
+  background: linear-gradient(90deg, #f6821f, #faae40);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.subtitle {
+  color: #9aa3b2;
+  margin-top: 0.25rem;
+}
+
+.card {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border: 1px solid #232838;
+  border-radius: 12px;
+  background: #11151f;
+  text-align: left;
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+.message {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.runtime,
+.hint {
+  color: #9aa3b2;
+  font-size: 0.9rem;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+code {
+  background: #1b2030;
+  padding: 0.1rem 0.4rem;
+  border-radius: 6px;
+  font-size: 0.85em;
+}
