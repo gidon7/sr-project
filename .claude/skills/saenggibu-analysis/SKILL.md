@@ -22,17 +22,25 @@ description: 학생 생활기록부(생기부)를 AI로 분석해 강점·보완
 6. **후속 탐구활동 제안**(주제 + 이유 + 연계 전공)
 7. **면접 예상 질문**(질문 + 출제 의도)
 
-## 아키텍처 (sr-project)
+## 아키텍처 (sr-project) — 교사용 관리 앱
 
-Cloudflare **Pages** + **Pages Functions** 로 배포 (`*.pages.dev`).
+Cloudflare **Pages** + **Pages Functions** + **D1**(DB) 로 배포 (`*.pages.dev`).
+교사 로그인 → 학생 등록 → 학생별 생기부 저장/수정 → 생기부 단위로 AI 분석·보관.
 
 ```
-React SPA (src/)  ──POST /api/analyze──▶  Pages Function (functions/api/analyze.ts)
-                                              │
-                                              ├─ _lib/pii.ts        개인정보 1차 마스킹
-                                              ├─ _lib/analysis.ts   시스템 프롬프트 + 출력 스키마
-                                              └─ Anthropic Messages API (forced tool use)
+React SPA (src/)
+  ├─ 로그인/가입 ──▶ functions/api/auth/*   (PBKDF2 + 세션쿠키)
+  ├─ 학생 CRUD   ──▶ functions/api/students/*
+  └─ 생기부 CRUD ──▶ functions/api/records/[id], records/[id]/analyze
+                          │
+                          ├─ _lib/data.ts       D1 조회 + 소유권 검사
+                          ├─ _lib/pii.ts        개인정보 1차 마스킹
+                          ├─ _lib/analysis.ts   시스템 프롬프트 + 출력 스키마
+                          └─ Anthropic Messages API (forced tool use) → analyses 테이블에 저장
 ```
+
+DB 스키마: `migrations/0001_init.sql` (users/sessions/students/records/analyses).
+모든 보호 라우트는 `getUser()` 로 세션 확인 + 학생/기록의 user_id 소유권을 검사한다.
 
 - **모델**: 기본 `claude-opus-4-8`. 비용 민감 시 env `ANTHROPIC_MODEL=claude-sonnet-4-6`.
 - **구조화 출력**: 단일 도구 `submit_saenggibu_analysis` 를 `tool_choice`로 강제하고

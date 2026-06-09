@@ -1,99 +1,91 @@
-# 생기부 AI (sr-project)
+# 생기부 관리 AI (sr-project)
 
-학생용 **생활기록부(생기부) 분석 AI**. 생기부를 붙여넣으면 Anthropic Claude가 입학사정관 관점에서
-강점·보완점·추천전공·항목별 분석·후속 탐구활동·예상 면접질문·경쟁력 점수를 진단해 줍니다.
+**교사용 생활기록부(생기부) 관리 + AI 분석** 웹앱. 선생님이 로그인해 학생을 등록하고, 학생별로
+생기부를 저장·수정하며, AI(입학사정관 관점)가 강점·보완점·추천전공·항목별 분석·후속 탐구활동·
+예상 면접질문·경쟁력 점수를 진단해 보관합니다.
 
-React + Vite SPA(프론트) + **Cloudflare Pages Functions**(백엔드)로 **Cloudflare Pages** 에 배포합니다.
-→ 배포 주소는 `https://sr-project.pages.dev` 형태.
+React + Vite SPA + **Cloudflare Pages Functions** + **Cloudflare D1**(DB) 로 **Cloudflare Pages** 에 배포 → `https://sr-project.pages.dev`.
 
 ## 스택
 
-- **프론트:** React 19 + Vite + TypeScript (`src/`) — React Router(랜딩 `/` + 분석기 `/analyze`)
-- **백엔드:** Cloudflare **Pages Functions** (`functions/api/*`) — `/api/analyze` 가 Anthropic Messages API 호출
-- **AI:** Anthropic Claude (`@anthropic-ai/sdk`), 강제 tool use + `strict` 스키마로 구조화 출력
-- **모델:** 기본 `claude-opus-4-8` (env `ANTHROPIC_MODEL` 로 변경, 비용 절감 시 `claude-sonnet-4-6`)
+- **프론트:** React 19 + Vite + TypeScript, React Router (랜딩/로그인/대시보드/학생/생기부)
+- **백엔드:** Cloudflare Pages Functions (`functions/api/*`)
+- **DB:** Cloudflare D1 (SQLite) — `users / sessions / students / records / analyses`
+- **인증:** 이메일+비밀번호, PBKDF2 해시, 세션 쿠키(HttpOnly)
+- **AI:** Anthropic Claude (`@anthropic-ai/sdk`), 강제 tool use + `strict` 스키마
+- **모델:** 기본 `claude-opus-4-8` (env `ANTHROPIC_MODEL`, 비용 절감 시 `claude-sonnet-4-6`)
 
 ## 구조
 
 ```
-src/                       React 앱
-  pages/Landing.tsx        랜딩(히어로·기능·사용법·FAQ·CTA)
-  pages/Analyze.tsx        분석기
-  components/              Nav, Footer, Report
-  api.ts                   /api/analyze 호출
-  types.ts                 분석 결과 타입 (functions/_lib/analysis.ts 와 동기화)
-functions/                 Cloudflare Pages Functions (백엔드)
-  api/analyze.ts           POST /api/analyze
-  api/health.ts            GET  /api/health
-  _lib/analysis.ts         시스템 프롬프트 + 출력 스키마 + Anthropic 호출 (단일 원천)
-  _lib/pii.ts              개인정보 1차 마스킹
-public/_redirects          SPA 라우팅 폴백
-.claude/skills/saenggibu-analysis/   생기부 분석 도메인 지식 스킬
-wrangler.jsonc             Pages 설정 (pages_build_output_dir, nodejs_compat)
+src/
+  pages/  Landing, Login, Register, Dashboard(학생목록), StudentPage(생기부목록), RecordPage(편집+분석)
+  components/  Nav, Footer, Report
+  auth.tsx     인증 컨텍스트
+  lib/api.ts   API 클라이언트
+  types.ts     공유 타입
+functions/
+  api/auth/    register, login, logout, me
+  api/students/  index(GET/POST), [id](GET/PUT/DELETE), [id]/records
+  api/records/   [id](GET/PUT/DELETE), [id]/analyze
+  _lib/        auth, data, http, analysis(프롬프트·스키마), pii, types
+migrations/0001_init.sql   D1 스키마
+wrangler.jsonc             Pages + D1 + nodejs_compat
 ```
-
-## 사전 준비
-
-- Node.js 20+ (이 저장소는 Node 24 LTS로 셋업)
-- [Cloudflare 계정](https://dash.cloudflare.com/sign-up)
-- [Anthropic API 키](https://console.anthropic.com/)
 
 ## 로컬 개발
 
 ```bash
 npm install
-cp .dev.vars.example .dev.vars   # ANTHROPIC_API_KEY 채우기
+cp .dev.vars.example .dev.vars          # ANTHROPIC_API_KEY 채우기 (분석 기능에 필요)
 
-npm run dev        # 프론트만 빠르게 (http://localhost:5173) — /api 는 동작 안 함
-npm run preview    # 빌드 + wrangler pages dev — Functions 포함 풀스택 로컬 실행
+# 1) 로컬 D1에 스키마 적용 (최초 1회)
+npx wrangler d1 execute sr-project-db --local --file=./migrations/0001_init.sql
+
+# 2) 풀스택 실행 (빌드 + Functions + 로컬 D1)
+npm run preview                          # http://127.0.0.1:8788
 ```
 
-분석 실제 동작을 보려면 `npm run preview` (Functions가 `.dev.vars` 의 키를 읽음).
-
-## 빌드
-
-```bash
-npm run build      # tsc 타입체크 + vite build → dist/ (정적), functions/ 는 Pages가 빌드
-```
+> `npm run dev` 는 프론트(UI)만 빠르게 띄웁니다. 로그인/DB/분석까지 보려면 `npm run preview`.
 
 ## Cloudflare Pages 배포
 
-### A. CLI 로 배포
+### 1. D1 데이터베이스 만들기
 
 ```bash
-npx wrangler login                                # 최초 1회 (브라우저 인증)
-npx wrangler pages secret put ANTHROPIC_API_KEY   # 운영용 키 등록 (프로젝트 생성 후)
-npm run deploy                                    # 빌드 + wrangler pages deploy
+npx wrangler login
+npx wrangler d1 create sr-project-db
 ```
 
-첫 배포 시 `sr-project` 라는 Pages 프로젝트가 생성되고 `https://sr-project.pages.dev` 로 접속됩니다.
+출력된 `database_id` 를 **`wrangler.jsonc` 의 `d1_databases[0].database_id`** 에 붙여넣습니다.
+그다음 운영 DB에 스키마 적용:
 
-### B. GitHub 연동(대시보드) 으로 배포 — 추천
+```bash
+npx wrangler d1 execute sr-project-db --remote --file=./migrations/0001_init.sql
+```
 
-Cloudflare 대시보드 → **Workers & Pages → Create → Pages → Connect to Git** → 이 저장소 선택 후:
+### 2. 배포
 
-| 항목 | 값 |
-|------|-----|
-| **Framework preset** | None (또는 Vite) |
-| **Build command** | `npm run build` |
-| **Build output directory** | `dist` |
+**A. CLI**
+```bash
+npx wrangler pages secret put ANTHROPIC_API_KEY   # 프로젝트 생성 후
+npm run deploy
+```
 
-그리고:
-- **Settings → Variables and secrets** 에 `ANTHROPIC_API_KEY` 를 **Secret** 으로 추가 (선택: `ANTHROPIC_MODEL`)
-- **Settings → Functions → Compatibility flags** 에 `nodejs_compat` 추가 (Production + Preview 모두)
-
-이후 git push 마다 자동 빌드/배포되고, 브랜치별 프리뷰 URL도 생성됩니다.
-
-> ⚠️ `nodejs_compat` 플래그가 없으면 Anthropic SDK가 동작하지 않습니다. CLI 배포는 `wrangler.jsonc`
-> 의 `compatibility_flags` 로 적용되지만, 대시보드 빌드는 위 Settings 에서 직접 켜야 합니다.
+**B. 대시보드 Git 연동 (추천)** — Workers & Pages → Create → **Pages** → Connect to Git → `gidon7/sr-project`
+- Build command: `npm run build` / Build output directory: `dist`
+- **Settings → Variables and secrets**: `ANTHROPIC_API_KEY` (Secret), 선택 `ANTHROPIC_MODEL`
+- **Settings → Functions → Compatibility flags**: `nodejs_compat` (Production + Preview)
+- **Settings → Functions → D1 database bindings**: 변수명 `DB` → `sr-project-db` 연결
+- 스키마는 위 `wrangler d1 execute ... --remote` 로 1회 적용
 
 ## 개인정보
 
-이름·연락처·주소·주민번호는 Functions에서 1차 정규식 마스킹 후 분석에 사용되며, 프롬프트에서도
-무시하도록 지시합니다. 입력 원문은 서버 로그에 남기지 않습니다. 정책:
+이름·연락처·주소·주민번호는 분석 전 자동 마스킹(정규식)되고 프롬프트에서도 무시하도록 지시합니다.
+입력 원문은 서버 로그에 남기지 않습니다. 정책:
 `.claude/skills/saenggibu-analysis/references/개인정보-마스킹.md`.
 
-## 도메인 지식 / 유지보수
+## 유지보수
 
-분석 기준·프롬프트·스키마는 Claude Code 스킬 `.claude/skills/saenggibu-analysis/` 참고.
-스키마의 단일 원천은 `functions/_lib/analysis.ts`, 프론트 타입은 `src/types.ts` — 항상 함께 수정합니다.
+분석 프롬프트·스키마의 단일 원천은 `functions/_lib/analysis.ts`, 프론트 타입은 `src/types.ts`.
+도메인 지식은 Claude Code 스킬 `.claude/skills/saenggibu-analysis/` 참고.

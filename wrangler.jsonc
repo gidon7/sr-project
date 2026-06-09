@@ -5,5 +5,16 @@
   "pages_build_output_dir": "dist",
   "compatibility_date": "2025-06-01",
   // Anthropic SDK 등 Node API 호환 (Pages Functions에 적용)
-  "compatibility_flags": ["nodejs_compat"]
+  "compatibility_flags": ["nodejs_compat"],
+  // D1 데이터베이스 바인딩.
+  //   1) npx wrangler d1 create sr-project-db
+  //   2) 출력된 database_id 를 아래에 붙여넣기
+  //   3) npx wrangler d1 execute sr-project-db --remote --file=./migrations/0001_init.sql
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "sr-project-db",
+      "database_id": "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+    }
+  ]
 }
