@@ -1,15 +1,28 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, Outlet } from "react-router-dom";
+import type { JSX } from "react";
 import "./App.css";
 import { useAuth } from "./auth";
 import Nav from "./components/Nav";
 import Footer from "./components/Footer";
+import AppLayout from "./components/AppLayout";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import Students from "./pages/Students";
 import StudentPage from "./pages/StudentPage";
 import RecordPage from "./pages/RecordPage";
-import type { JSX } from "react";
+
+// 공개 페이지용 크롬(상단 내비 + 푸터)
+function PublicChrome() {
+  return (
+    <div className="site">
+      <Nav />
+      <Outlet />
+      <Footer />
+    </div>
+  );
+}
 
 function RequireAuth({ children }: { children: JSX.Element }) {
   const { user, loading } = useAuth();
@@ -25,39 +38,28 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 
 export default function App() {
   return (
-    <div className="site">
-      <Nav />
-      <Routes>
+    <Routes>
+      <Route element={<PublicChrome />}>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route
-          path="/app"
-          element={
-            <RequireAuth>
-              <Dashboard />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/app/students/:id"
-          element={
-            <RequireAuth>
-              <StudentPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/app/records/:id"
-          element={
-            <RequireAuth>
-              <RecordPage />
-            </RequireAuth>
-          }
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      <Footer />
-    </div>
+      </Route>
+
+      <Route
+        path="/app"
+        element={
+          <RequireAuth>
+            <AppLayout />
+          </RequireAuth>
+        }
+      >
+        <Route index element={<Dashboard />} />
+        <Route path="students" element={<Students />} />
+        <Route path="students/:id" element={<StudentPage />} />
+        <Route path="records/:id" element={<RecordPage />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
   );
 }

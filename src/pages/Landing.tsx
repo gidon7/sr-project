@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 
 const FEATURES = [
@@ -24,8 +24,18 @@ const FAQS = [
 ];
 
 export default function Landing() {
-  const { user } = useAuth();
+  const { user, demoLogin } = useAuth();
+  const navigate = useNavigate();
   const startTo = user ? "/app" : "/register";
+
+  async function onDemo() {
+    try {
+      await demoLogin();
+      navigate("/app");
+    } catch {
+      navigate("/login");
+    }
+  }
 
   return (
     <main>
@@ -46,9 +56,11 @@ export default function Landing() {
               <Link to={startTo} className="btn btn-primary btn-lg">
                 {user ? "대시보드로 이동 →" : "무료로 시작하기 →"}
               </Link>
-              <a href="#how" className="btn btn-ghost btn-lg">
-                사용법 보기
-              </a>
+              {!user && (
+                <button type="button" className="btn btn-demo btn-lg" onClick={onDemo}>
+                  🧪 관리자 테스트 로그인
+                </button>
+              )}
             </div>
             <p className="hero-trust">🔒 개인정보 자동 마스킹 · 계정별 안전 보관</p>
           </div>

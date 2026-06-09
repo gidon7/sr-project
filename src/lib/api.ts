@@ -25,6 +25,7 @@ export const api = {
     req<{ user: User }>("/api/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
   register: (email: string, password: string) =>
     req<{ user: User }>("/api/auth/register", { method: "POST", body: JSON.stringify({ email, password }) }),
+  demoLogin: () => req<{ user: User }>("/api/auth/demo", { method: "POST" }),
   logout: () => req<{ ok: true }>("/api/auth/logout", { method: "POST" }),
 
   // students

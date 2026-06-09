@@ -1,18 +1,18 @@
 :root {
-  /* brand — teal/green */
-  --brand: #0d9488;
-  --brand-600: #0f766e;
-  --brand-700: #115e59;
-  --brand-50: #f0fdfa;
-  --brand-100: #ccfbf1;
-  --accent: #14b8a6;
+  /* brand — blue (AI SchoolDesk 스타일) */
+  --brand: #2f63ed;
+  --brand-600: #1d4ed8;
+  --brand-700: #1e3a8a;
+  --brand-50: #eef3ff;
+  --brand-100: #dbe6fe;
+  --accent: #3b82f6;
 
   /* neutrals */
   --bg: #ffffff;
-  --bg-soft: #f6faf9;
+  --bg-soft: #f5f7fb;
   --text: #0f172a;
   --muted: #64748b;
-  --border: #e6ebef;
+  --border: #e6ebf2;
   --card: #ffffff;
 
   --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
