@@ -6,9 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy",
-    "cf-typegen": "wrangler types"
+    "preview": "npm run build && wrangler pages dev",
+    "deploy": "npm run build && wrangler pages deploy"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.70.0",
@@ -17,7 +16,6 @@
     "react-router-dom": "^7.1.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.0.0",
     "@cloudflare/workers-types": "^4.20250601.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",

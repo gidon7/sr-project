@@ -1,16 +1,9 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "sr-project",
-  "main": "worker/index.ts",
+  // Cloudflare Pages 설정. 정적 빌드 산출물 디렉터리.
+  "pages_build_output_dir": "dist",
   "compatibility_date": "2025-06-01",
-  "compatibility_flags": ["nodejs_compat"],
-  // Static assets = the React SPA build output. The Cloudflare Vite plugin
-  // wires the build directory automatically; SPA fallback serves index.html
-  // for client-side routes (anything that isn't an API route or a real file).
-  "assets": {
-    "not_found_handling": "single-page-application"
-  },
-  "observability": {
-    "enabled": true
-  }
+  // Anthropic SDK 등 Node API 호환 (Pages Functions에 적용)
+  "compatibility_flags": ["nodejs_compat"]
 }

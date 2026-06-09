@@ -1,9 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import { cloudflare } from "@cloudflare/vite-plugin";
 
-// React SPA (frontend) + Cloudflare Worker (backend API) in a single build.
-// The Cloudflare plugin serves the built assets and runs ./worker/index.ts.
+// Cloudflare Pages: 일반 정적 빌드(dist/). 백엔드는 Pages Functions(functions/).
 export default defineConfig({
-  plugins: [react(), cloudflare()],
+  plugins: [react()],
 });

@@ -1,0 +1,3 @@
+# SPA 폴백: /api/* 는 Pages Functions가 먼저 처리하고,
+# 나머지 클라이언트 라우트는 index.html 로 보내 React Router가 렌더한다.
+/*    /index.html   200

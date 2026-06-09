@@ -12,10 +12,7 @@ export function maskPii(input: string): string {
   text = text.replace(/\b\d{6}\s*-\s*\d{7}\b/g, "[주민번호]");
 
   // 휴대전화/전화번호: 010-1234-5678, 02-123-4567 등 (하이픈/공백/점 구분 허용)
-  text = text.replace(
-    /\b0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4}\b/g,
-    "[전화번호]",
-  );
+  text = text.replace(/\b0\d{1,2}[-.\s]?\d{3,4}[-.\s]?\d{4}\b/g, "[전화번호]");
 
   // 이메일
   text = text.replace(

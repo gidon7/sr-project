@@ -24,11 +24,13 @@ description: 학생 생활기록부(생기부)를 AI로 분석해 강점·보완
 
 ## 아키텍처 (sr-project)
 
+Cloudflare **Pages** + **Pages Functions** 로 배포 (`*.pages.dev`).
+
 ```
-React SPA (src/)  ──POST /api/analyze──▶  Cloudflare Worker (worker/)
+React SPA (src/)  ──POST /api/analyze──▶  Pages Function (functions/api/analyze.ts)
                                               │
-                                              ├─ pii.ts        개인정보 1차 마스킹
-                                              ├─ analysis.ts   시스템 프롬프트 + 출력 스키마
+                                              ├─ _lib/pii.ts        개인정보 1차 마스킹
+                                              ├─ _lib/analysis.ts   시스템 프롬프트 + 출력 스키마
                                               └─ Anthropic Messages API (forced tool use)
 ```
 
@@ -37,7 +39,8 @@ React SPA (src/)  ──POST /api/analyze──▶  Cloudflare Worker (worker/)
   `strict: true`로 스키마를 보장한다. (extended thinking과 강제 tool_choice는 함께 못 쓰므로
   thinking은 끈다 — 출력이 스키마로 제약되어 품질에 영향 없음.)
 - **API 키**: `ANTHROPIC_API_KEY` 시크릿. 로컬은 `.dev.vars`, 운영은
-  `npx wrangler secret put ANTHROPIC_API_KEY`.
+  `npx wrangler pages secret put ANTHROPIC_API_KEY` 또는 Pages 대시보드 환경변수.
+- **nodejs_compat** 플래그 필요(Anthropic SDK) — `wrangler.jsonc` 및 대시보드 Functions 설정.
 
 ## 작업할 때 읽을 참고 문서
 
@@ -49,7 +52,7 @@ React SPA (src/)  ──POST /api/analyze──▶  Cloudflare Worker (worker/)
 | 출력 JSON 스키마를 바꿀 때 | [references/출력-스키마.md](references/출력-스키마.md) |
 | 개인정보 처리를 손볼 때 | [references/개인정보-마스킹.md](references/개인정보-마스킹.md) |
 
-스키마/프롬프트의 **단일 원천(source of truth)** 은 `worker/analysis.ts`,
+스키마/프롬프트의 **단일 원천(source of truth)** 은 `functions/_lib/analysis.ts`,
 프론트 타입은 `src/types.ts`. 위 MD는 그 설계 의도를 설명한다. 셋은 항상 함께 수정한다.
 
 ## 절대 규칙
