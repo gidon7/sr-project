@@ -15,19 +15,19 @@ DELETE FROM timetable WHERE user_id=(SELECT id FROM users WHERE email='admin@dem
 
 -- 1) 학생
 INSERT INTO students (user_id,name,grade,target_major) VALUES
-((SELECT id FROM users WHERE email='admin@demo.local'),'김서연','2학년 자연계','생명공학과'),
-((SELECT id FROM users WHERE email='admin@demo.local'),'이준호','2학년 자연계','컴퓨터공학과'),
-((SELECT id FROM users WHERE email='admin@demo.local'),'박민지','3학년 인문계','경영학과'),
-((SELECT id FROM users WHERE email='admin@demo.local'),'최도윤','1학년','미정'),
-((SELECT id FROM users WHERE email='admin@demo.local'),'정하준','3학년 자연계','화학공학과');
+((SELECT id FROM users WHERE email='admin@demo.local'),'홍길동','2학년 자연계','생명공학과'),
+((SELECT id FROM users WHERE email='admin@demo.local'),'김토토','2학년 자연계','컴퓨터공학과'),
+((SELECT id FROM users WHERE email='admin@demo.local'),'이방울','3학년 인문계','경영학과'),
+((SELECT id FROM users WHERE email='admin@demo.local'),'박하늘','1학년','미정'),
+((SELECT id FROM users WHERE email='admin@demo.local'),'최우주','3학년 자연계','화학공학과');
 
 -- 2) 생기부 기록 (일부 학생)
 INSERT INTO records (student_id,title,content) VALUES
-((SELECT id FROM students WHERE name='김서연' AND user_id=(SELECT id FROM users WHERE email='admin@demo.local')),'2025 1학기 생기부',
+((SELECT id FROM students WHERE name='홍길동' AND user_id=(SELECT id FROM users WHERE email='admin@demo.local')),'2025 1학기 생기부',
 '[교과세특] 생명과학1: 효소의 작용 실험에서 온도와 pH에 따른 반응 속도 차이에 의문을 갖고 추가 탐구를 수행함. [동아리활동] 생명탐구반에서 미생물 배양 실험을 설계하고 결과를 그래프로 정리함. [진로활동] 생명공학 연구원 직업 탐색 후 유전자 가위 기술을 주제로 보고서를 작성함. [행동특성 및 종합의견] 호기심이 많고 끈기 있게 탐구하며 조원을 배려함.'),
-((SELECT id FROM students WHERE name='이준호' AND user_id=(SELECT id FROM users WHERE email='admin@demo.local')),'2025 1학기 생기부',
+((SELECT id FROM students WHERE name='김토토' AND user_id=(SELECT id FROM users WHERE email='admin@demo.local')),'2025 1학기 생기부',
 '[교과세특] 정보: 파이썬으로 학급 설문 결과를 시각화하는 프로그램을 제작함. [동아리활동] 코딩동아리에서 간단한 웹앱을 개발해 발표함. [진로활동] 인공지능 윤리를 주제로 토론에 참여함. [행동특성 및 종합의견] 논리적 사고가 뛰어나고 문제 해결에 적극적임.'),
-((SELECT id FROM students WHERE name='정하준' AND user_id=(SELECT id FROM users WHERE email='admin@demo.local')),'2024 2학기 생기부',
+((SELECT id FROM students WHERE name='최우주' AND user_id=(SELECT id FROM users WHERE email='admin@demo.local')),'2024 2학기 생기부',
 '[교과세특] 화학2: 산화환원 반응을 일상 사례와 연결해 설명하는 발표를 진행함. [동아리활동] 화학실험반에서 전기분해 실험을 수행함. [행동특성 및 종합의견] 성실하고 실험 설계 능력이 우수함.');
 
 -- 3) 수업 자료 (AI 생성 예시)
