@@ -5,21 +5,33 @@ const SOURCES = [
   { key: "students", label: "학생", endpoint: "/api/students", icon: "👥" },
   { key: "materials", label: "수업 자료", endpoint: "/api/materials", icon: "💡" },
   { key: "documents", label: "문서", endpoint: "/api/documents", icon: "📝" },
-  { key: "teachers", label: "교사", endpoint: "/api/teachers", icon: "🧑‍🏫" },
-  { key: "classes", label: "학급", endpoint: "/api/classes", icon: "🏫" },
+  { key: "teachers", label: "교사", endpoint: "/api/teachers", icon: "교사" },
+  { key: "classes", label: "학급", endpoint: "/api/classes", icon: "학급" },
 ];
 
 export default function SystemStatus() {
-  const [counts, setCounts] = useState<Record<string, number | null>>({});
+  const [counts, setCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
+    let alive = true;
     SOURCES.forEach((s) => {
       crud
         .list(s.endpoint)
-        .then((d) => setCounts((c) => ({ ...c, [s.key]: (d.items as unknown[]).length })))
-        .catch(() => setCounts((c) => ({ ...c, [s.key]: null })));
+        .then((d) => {
+          const n = Array.isArray(d?.items) ? d.items.length : 0;
+          if (alive) setCounts((c) => ({ ...c, [s.key]: n }));
+        })
+        .catch(() => {
+          if (alive) setCounts((c) => ({ ...c, [s.key]: 0 }));
+        });
     });
+    return () => {
+      alive = false;
+    };
   }, []);
+
+  const vals = SOURCES.map((s) => counts[s.key] ?? 0);
+  const max = Math.max(1, ...vals);
 
   return (
     <>
@@ -30,12 +42,12 @@ export default function SystemStatus() {
         </div>
       </div>
 
-      <div className="stat-cards" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))" }}>
+      <div className="stat-cards">
         {SOURCES.map((s) => (
           <div className="stat-card" key={s.key}>
             <span className="stat-ic blue">{s.icon}</span>
             <div>
-              <div className="stat-num">{counts[s.key] ?? "—"}</div>
+              <div className="stat-num">{s.key in counts ? counts[s.key] : "—"}</div>
               <div className="stat-label">{s.label}</div>
             </div>
           </div>
@@ -47,24 +59,19 @@ export default function SystemStatus() {
           <h2>데이터 분포</h2>
         </div>
         <div className="bar-chart">
-          {(() => {
-            const vals = SOURCES.map((s) => counts[s.key] ?? 0);
-            const max = Math.max(1, ...vals);
-            return SOURCES.map((s) => {
-              const v = counts[s.key] ?? 0;
-              return (
-                <div className="bc-row" key={s.key}>
-                  <span className="bc-label">
-                    {s.icon} {s.label}
-                  </span>
-                  <div className="bc-track">
-                    <div className="bc-fill" style={{ width: `${(v / max) * 100}%` }} />
-                  </div>
-                  <span className="bc-val">{v}</span>
+          {SOURCES.map((s) => {
+            const v = counts[s.key] ?? 0;
+            const pct = Math.round((v / max) * 100);
+            return (
+              <div className="bc-row" key={s.key}>
+                <span className="bc-label">{s.label}</span>
+                <div className="bc-track">
+                  <div className="bc-fill" style={{ width: pct + "%" }} />
                 </div>
-              );
-            });
-          })()}
+                <span className="bc-val">{v}</span>
+              </div>
+            );
+          })}
         </div>
       </div>
 

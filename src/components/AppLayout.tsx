@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
+import ErrorBoundary from "./ErrorBoundary";
 
 interface SubItem {
   to: string;
@@ -159,7 +160,9 @@ export default function AppLayout() {
         </header>
 
         <main className="content">
-          <Outlet />
+          <ErrorBoundary key={pathname}>
+            <Outlet />
+          </ErrorBoundary>
         </main>
       </div>
 
