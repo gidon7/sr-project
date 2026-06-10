@@ -19,6 +19,13 @@ export default function Dashboard() {
   const totalRecords = students.reduce((s, x) => s + (x.record_count ?? 0), 0);
   const recent = students.slice(0, 6);
 
+  const MODULES = [
+    { to: "/app/students", icon: "📊", title: "생기부 분석", desc: "학생별 생기부 관리·AI 진단", soon: false },
+    { to: "/app/materials/new", icon: "💡", title: "수업 자료", desc: "AI 학습자료 생성", soon: true },
+    { to: "/app/documents", icon: "📝", title: "문서 작성", desc: "에디터 + PDF·HWPX 내보내기", soon: true },
+    { to: "/app/teachers", icon: "⚙️", title: "시스템 관리", desc: "교사·학급·시간표·권한", soon: true },
+  ];
+
   return (
     <>
       <div className="page-header">
@@ -53,6 +60,21 @@ export default function Dashboard() {
             <div className="stat-label">Claude 분석</div>
           </div>
         </div>
+      </div>
+
+      <div className="module-grid">
+        {MODULES.map((m) => (
+          <Link to={m.to} className="module-card" key={m.title}>
+            <span className="module-ic">{m.icon}</span>
+            <div className="module-body">
+              <div className="module-title">
+                {m.title}
+                {m.soon && <span className="soon-badge">준비</span>}
+              </div>
+              <div className="module-desc">{m.desc}</div>
+            </div>
+          </Link>
+        ))}
       </div>
 
       <div className="panel">
