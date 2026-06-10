@@ -1556,7 +1556,8 @@
   .page-header .btn,
   .editor-actions,
   .rt-toolbar,
-  .side-backdrop {
+  .side-backdrop,
+  .no-print {
     display: none !important;
   }
   .shell {
@@ -1653,6 +1654,21 @@
   color: #c2741a;
   font-style: normal;
   opacity: 0.8;
+}
+
+/* ===== record editor top row + report toolbar ===== */
+.editor-top {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+.editor-top .title-input {
+  flex: 1;
+}
+.report-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 /* ===== bar chart (시스템 현황) ===== */

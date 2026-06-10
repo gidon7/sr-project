@@ -53,6 +53,10 @@ export const api = {
   deleteRecord: (id: number) => req<{ ok: true }>(`/api/records/${id}`, { method: "DELETE" }),
   analyzeRecord: (id: number) =>
     req<{ result: AnalysisResult }>(`/api/records/${id}/analyze`, { method: "POST" }),
+  recordAnalyses: (id: number) =>
+    req<{ items: { id: number; score: number | null; created_at: string }[] }>(
+      `/api/records/${id}/analyses`,
+    ),
 
   // 수업 자료 AI 생성 (키 필요)
   generateMaterial: (body: {

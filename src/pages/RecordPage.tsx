@@ -1,10 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import type { AnalysisResult, Student } from "../types";
 import Report from "../components/Report";
 import TextChecker from "../components/TextChecker";
 import { LIMIT_PRESETS } from "../lib/saenggibuRules";
+import { extractTextFromFile } from "../lib/fileText";
+
+interface ScorePoint {
+  id: number;
+  score: number | null;
+  created_at: string;
+}
 
 export default function RecordPage() {
   const { id } = useParams();
@@ -21,6 +28,16 @@ export default function RecordPage() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [limit, setLimit] = useState<number>(1500);
+  const [history, setHistory] = useState<ScorePoint[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  function loadHistory() {
+    api
+      .recordAnalyses(recordId)
+      .then((d) => setHistory(d.items))
+      .catch(() => {});
+  }
 
   useEffect(() => {
     api
@@ -33,7 +50,25 @@ export default function RecordPage() {
       })
       .catch((e) => setError(e instanceof Error ? e.message : String(e)))
       .finally(() => setLoading(false));
+    loadHistory();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recordId]);
+
+  async function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setUploading(true);
+    setError(null);
+    try {
+      const t = await extractTextFromFile(f);
+      setContent((prev) => (prev.trim() ? prev + "\n" + t : t));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
 
   async function save() {
     setSaving(true);
@@ -55,6 +90,7 @@ export default function RecordPage() {
       await api.updateRecord(recordId, { title, content });
       const d = await api.analyzeRecord(recordId);
       setResult(d.result);
+      loadHistory();
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
@@ -76,13 +112,30 @@ export default function RecordPage() {
         ← {student?.name ?? "학생"}
       </Link>
 
-      <div className="record-editor panel">
-        <input
-          className="title-input"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="생기부 제목"
-        />
+      <div className="record-editor panel no-print">
+        <div className="editor-top">
+          <input
+            className="title-input"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="생기부 제목"
+          />
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => fileRef.current?.click()}
+            disabled={uploading}
+          >
+            {uploading ? "불러오는 중…" : "📎 파일 불러오기"}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".txt,.pdf"
+            style={{ display: "none" }}
+            onChange={onUpload}
+          />
+        </div>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -125,7 +178,37 @@ export default function RecordPage() {
         </div>
       )}
 
-      {result && !analyzing && <Report data={result} />}
+      {result && !analyzing && (
+        <>
+          <div className="report-toolbar no-print">
+            <button className="btn btn-ghost" onClick={() => window.print()}>
+              🖨 리포트 PDF
+            </button>
+          </div>
+          <Report data={result} />
+        </>
+      )}
+
+      {history.length >= 2 && (
+        <div className="panel no-print">
+          <div className="panel-head">
+            <h2>분석 점수 추이</h2>
+          </div>
+          <div className="bar-chart">
+            {history.map((h, i) => (
+              <div className="bc-row" key={h.id}>
+                <span className="bc-label">
+                  {i + 1}회 · {h.created_at?.slice(5, 10)}
+                </span>
+                <div className="bc-track">
+                  <div className="bc-fill" style={{ width: (h.score ?? 0) + "%" }} />
+                </div>
+                <span className="bc-val">{h.score ?? "—"}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </>
   );
 }
