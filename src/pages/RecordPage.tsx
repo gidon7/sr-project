@@ -3,6 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import type { AnalysisResult, Student } from "../types";
 import Report from "../components/Report";
+import TextChecker from "../components/TextChecker";
+import { LIMIT_PRESETS } from "../lib/saenggibuRules";
 
 export default function RecordPage() {
   const { id } = useParams();
@@ -18,6 +20,7 @@ export default function RecordPage() {
   const [analyzing, setAnalyzing] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [limit, setLimit] = useState<number>(1500);
 
   useEffect(() => {
     api
@@ -86,6 +89,21 @@ export default function RecordPage() {
           rows={14}
           placeholder="세특·창의적 체험활동·행동특성 등 생기부 내용을 입력하세요. 이름·연락처는 자동 마스킹됩니다."
         />
+        <div className="checker-bar">
+          <label>
+            기재 기준
+            <select value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+              {LIMIT_PRESETS.map((p) => (
+                <option key={p.label} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <span className="checker-note">※ byte는 UTF-8(한글 3byte) 기준 · NEIS 학년도별 기준은 확인하세요</span>
+        </div>
+        <TextChecker text={content} limit={limit} />
+
         <p className="privacy-note">🔒 이름·연락처·주소·주민번호는 분석 시 자동 마스킹됩니다.</p>
         <div className="editor-actions">
           {savedAt && <span className="saved-hint">저장됨 {savedAt}</span>}

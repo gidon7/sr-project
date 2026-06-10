@@ -1,6 +1,12 @@
 import type { Env } from "./types";
 import { getUser } from "./auth";
 import { json, unauthorized, badRequest, notFound } from "./http";
+import { logAudit } from "./audit";
+
+function labelOf(item: unknown): string {
+  const o = item as Record<string, unknown> | null;
+  return String(o?.title ?? o?.name ?? o?.grade ?? "") || "";
+}
 
 interface CrudOptions {
   table: string;
@@ -48,6 +54,7 @@ export function makeCrud(opts: CrudOptions) {
     const item = await env.DB.prepare(`SELECT * FROM ${opts.table} WHERE id = ?`)
       .bind(Number(res.meta.last_row_id))
       .first();
+    await logAudit(env, user.id, "create", opts.table, labelOf(item));
     return json({ item });
   }
 
@@ -85,6 +92,7 @@ export function makeCrud(opts: CrudOptions) {
       .bind(...vals, id)
       .run();
     const item = await env.DB.prepare(`SELECT * FROM ${opts.table} WHERE id = ?`).bind(id).first();
+    await logAudit(env, user.id, "update", opts.table, labelOf(item));
     return json({ item });
   }
 
@@ -98,6 +106,7 @@ export function makeCrud(opts: CrudOptions) {
       .first();
     if (!existing) return notFound();
     await env.DB.prepare(`DELETE FROM ${opts.table} WHERE id = ?`).bind(id).run();
+    await logAudit(env, user.id, "delete", opts.table);
     return json({ ok: true });
   }
 

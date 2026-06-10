@@ -4,6 +4,7 @@ import { getUser } from "../../../_lib/auth";
 import { getOwnedRecord, paramId } from "../../../_lib/data";
 import { maskPii } from "../../../_lib/pii";
 import { runAnalysis } from "../../../_lib/analysis";
+import { logAudit } from "../../../_lib/audit";
 
 const MAX_RECORD_CHARS = 30000;
 
@@ -46,6 +47,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
       .bind(id, model, JSON.stringify(result))
       .run();
 
+    await logAudit(env, user.id, "analyze", "records", record.title);
     return json({ result });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

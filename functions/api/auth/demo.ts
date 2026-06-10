@@ -1,6 +1,7 @@
 import type { Env } from "../../_lib/types";
 import { json, serverError } from "../../_lib/http";
 import { hashPassword, createSession, sessionCookie } from "../../_lib/auth";
+import { logAudit } from "../../_lib/audit";
 
 // POST /api/auth/demo — 테스트용 원클릭 관리자 로그인.
 // 고정 데모 계정으로 로그인(없으면 생성). 테스트 사이트 전용.
@@ -23,6 +24,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env }) => {
     }
 
     const token = await createSession(env, user.id);
+    await logAudit(env, user.id, "login", "auth", "demo");
     return json({ user }, 200, { "Set-Cookie": sessionCookie(token) });
   } catch (e) {
     console.error("demo login failed:", e instanceof Error ? e.message : String(e));

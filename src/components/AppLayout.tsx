@@ -46,6 +46,7 @@ const MENU: MenuNode[] = [
       { to: "/app/classes", label: "학급·반 관리" },
       { to: "/app/timetable", label: "시간표 관리" },
       { to: "/app/accounts", label: "계정·권한 관리" },
+      { to: "/app/audit", label: "감사 로그" },
       { to: "/app/system", label: "시스템 현황" },
     ],
   },

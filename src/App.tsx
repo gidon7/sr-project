@@ -23,6 +23,7 @@ import Classes from "./pages/Classes";
 import Timetable from "./pages/Timetable";
 import Accounts from "./pages/Accounts";
 import SystemStatus from "./pages/SystemStatus";
+import AuditLog from "./pages/AuditLog";
 
 // 공개 페이지용 크롬(상단 내비 + 푸터)
 function PublicChrome() {
@@ -82,6 +83,7 @@ export default function App() {
         <Route path="classes" element={<Classes />} />
         <Route path="timetable" element={<Timetable />} />
         <Route path="accounts" element={<Accounts />} />
+        <Route path="audit" element={<AuditLog />} />
         <Route path="system" element={<SystemStatus />} />
       </Route>
 

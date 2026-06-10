@@ -1,6 +1,7 @@
 import type { Env } from "../../_lib/types";
 import { json, badRequest, unauthorized } from "../../_lib/http";
 import { getUser } from "../../_lib/auth";
+import { logAudit } from "../../_lib/audit";
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   const user = await getUser(env, request);
@@ -40,6 +41,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     .run();
 
   const id = Number(res.meta.last_row_id);
+  await logAudit(env, user.id, "create", "students", name);
   return json({
     student: {
       id,

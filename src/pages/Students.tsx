@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../lib/api";
+import { toCsv, downloadCsv, parseCsv } from "../lib/csv";
 import type { Student } from "../types";
 
 export default function Students() {
@@ -13,7 +14,43 @@ export default function Students() {
   const [grade, setGrade] = useState("");
   const [targetMajor, setTargetMajor] = useState("");
   const [adding, setAdding] = useState(false);
+  const [importing, setImporting] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
+
+  function exportCsv() {
+    const csv = toCsv(
+      ["이름", "학년", "희망전공"],
+      students.map((s) => [s.name, s.grade ?? "", s.target_major ?? ""]),
+    );
+    downloadCsv("students.csv", csv);
+  }
+
+  async function importCsv(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImporting(true);
+    setError(null);
+    try {
+      const rows = parseCsv(await file.text());
+      let start = 0;
+      if (rows[0] && (rows[0][0] === "이름" || rows[0][0]?.trim() === "이름")) start = 1;
+      let n = 0;
+      for (let i = start; i < rows.length; i++) {
+        const [name, grade, targetMajor] = rows[i];
+        if (!name?.trim()) continue;
+        await api.createStudent({ name: name.trim(), grade, targetMajor });
+        n++;
+      }
+      alert(`${n}명 가져오기 완료`);
+      await load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setImporting(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  }
 
   async function load() {
     setLoading(true);
@@ -62,9 +99,28 @@ export default function Students() {
           <h1 className="page-title">학생 관리</h1>
           <p className="page-desc">학생을 등록하고 생기부를 관리·분석합니다.</p>
         </div>
-        <button className="btn btn-primary" onClick={() => setShowAdd((v) => !v)}>
-          + 새 학생 만들기
-        </button>
+        <div className="header-actions">
+          <button className="btn btn-ghost btn-sm" onClick={exportCsv} disabled={students.length === 0}>
+            ⬇ CSV 내보내기
+          </button>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => fileRef.current?.click()}
+            disabled={importing}
+          >
+            {importing ? "가져오는 중…" : "⬆ CSV 가져오기"}
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept=".csv"
+            style={{ display: "none" }}
+            onChange={importCsv}
+          />
+          <button className="btn btn-primary" onClick={() => setShowAdd((v) => !v)}>
+            + 새 학생 만들기
+          </button>
+        </div>
       </div>
 
       {showAdd && (

@@ -2,6 +2,7 @@ import type { Env } from "../../_lib/types";
 import { getUser } from "../../_lib/auth";
 import { json, unauthorized, badRequest } from "../../_lib/http";
 import { generateMaterial, type MaterialInput } from "../../_lib/materials";
+import { logAudit } from "../../_lib/audit";
 
 // POST /api/materials/generate — AI로 수업 자료 생성 후 저장 (키 필요)
 export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
@@ -47,6 +48,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ env, request }) => {
     const item = await env.DB.prepare("SELECT * FROM materials WHERE id = ?")
       .bind(Number(res.meta.last_row_id))
       .first();
+    await logAudit(env, user.id, "generate", "materials", title);
     return json({ item });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);

@@ -42,6 +42,32 @@ export default function SystemStatus() {
         ))}
       </div>
 
+      <div className="panel" style={{ marginBottom: "1rem" }}>
+        <div className="panel-head">
+          <h2>데이터 분포</h2>
+        </div>
+        <div className="bar-chart">
+          {(() => {
+            const vals = SOURCES.map((s) => counts[s.key] ?? 0);
+            const max = Math.max(1, ...vals);
+            return SOURCES.map((s) => {
+              const v = counts[s.key] ?? 0;
+              return (
+                <div className="bc-row" key={s.key}>
+                  <span className="bc-label">
+                    {s.icon} {s.label}
+                  </span>
+                  <div className="bc-track">
+                    <div className="bc-fill" style={{ width: `${(v / max) * 100}%` }} />
+                  </div>
+                  <span className="bc-val">{v}</span>
+                </div>
+              );
+            });
+          })()}
+        </div>
+      </div>
+
       <div className="panel">
         <div className="panel-head">
           <h2>서비스 상태</h2>

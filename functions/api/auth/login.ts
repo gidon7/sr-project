@@ -1,6 +1,7 @@
 import type { Env } from "../../_lib/types";
 import { json, badRequest, unauthorized, serverError } from "../../_lib/http";
 import { verifyPassword, createSession, sessionCookie } from "../../_lib/auth";
+import { logAudit } from "../../_lib/audit";
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   let body: { email?: string; password?: string };
@@ -26,6 +27,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     }
 
     const token = await createSession(env, row.id);
+    await logAudit(env, row.id, "login", "auth");
     return json({ user: { id: row.id, email: row.email } }, 200, {
       "Set-Cookie": sessionCookie(token),
     });

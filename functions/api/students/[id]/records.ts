@@ -2,6 +2,7 @@ import type { Env } from "../../../_lib/types";
 import { json, badRequest, unauthorized, notFound } from "../../../_lib/http";
 import { getUser } from "../../../_lib/auth";
 import { getOwnedStudent, paramId } from "../../../_lib/data";
+import { logAudit } from "../../../_lib/audit";
 
 // GET /api/students/:id/records — 학생의 생기부 목록
 export const onRequestGet: PagesFunction<Env> = async ({ request, env, params }) => {
@@ -46,5 +47,6 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
     .bind(studentId, title, body.content ?? "")
     .run();
 
+  await logAudit(env, user.id, "create", "records", title);
   return json({ record: { id: Number(res.meta.last_row_id), title, content: body.content ?? "" } });
 };
