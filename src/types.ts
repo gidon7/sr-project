@@ -79,3 +79,61 @@ export interface StoredAnalysis {
   model: string | null;
   created_at: string;
 }
+
+// ---- P2~P4 모듈 ----
+export interface Material {
+  id: number;
+  title: string;
+  type: string;
+  subject: string | null;
+  grade: string | null;
+  difficulty: string | null;
+  topic: string | null;
+  content: string;
+  created_at: string;
+}
+export interface DocumentItem {
+  id: number;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+export interface TemplateItem {
+  id: number;
+  title: string;
+  content: string;
+  created_at: string;
+}
+export interface Teacher {
+  id: number;
+  name: string;
+  email: string | null;
+  role: string | null;
+  subject: string | null;
+  created_at: string;
+}
+export interface ClassItem {
+  id: number;
+  grade: string | null;
+  class_no: string | null;
+  homeroom: string | null;
+  note: string | null;
+  created_at: string;
+}
+export interface TimetableItem {
+  id: number;
+  class_name: string | null;
+  day: string | null;
+  period: string | null;
+  subject: string | null;
+  teacher: string | null;
+  created_at: string;
+}
+
+export const MATERIAL_TYPE_LABELS: Record<string, string> = {
+  quiz: "퀴즈 문제지",
+  fill_blank: "빈칸채우기",
+  compare: "개념 비교표",
+  summary: "핵심 요약",
+};

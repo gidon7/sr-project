@@ -21,9 +21,9 @@ export default function Dashboard() {
 
   const MODULES = [
     { to: "/app/students", icon: "📊", title: "생기부 분석", desc: "학생별 생기부 관리·AI 진단", soon: false },
-    { to: "/app/materials/new", icon: "💡", title: "수업 자료", desc: "AI 학습자료 생성", soon: true },
-    { to: "/app/documents", icon: "📝", title: "문서 작성", desc: "에디터 + PDF·HWPX 내보내기", soon: true },
-    { to: "/app/teachers", icon: "⚙️", title: "시스템 관리", desc: "교사·학급·시간표·권한", soon: true },
+    { to: "/app/materials/new", icon: "💡", title: "수업 자료", desc: "AI 학습자료 생성", soon: false },
+    { to: "/app/documents", icon: "📝", title: "문서 작성", desc: "에디터 + PDF 내보내기", soon: false },
+    { to: "/app/teachers", icon: "⚙️", title: "시스템 관리", desc: "교사·학급·시간표·권한", soon: false },
   ];
 
   return (

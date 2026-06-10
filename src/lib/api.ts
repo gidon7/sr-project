@@ -53,4 +53,27 @@ export const api = {
   deleteRecord: (id: number) => req<{ ok: true }>(`/api/records/${id}`, { method: "DELETE" }),
   analyzeRecord: (id: number) =>
     req<{ result: AnalysisResult }>(`/api/records/${id}/analyze`, { method: "POST" }),
+
+  // 수업 자료 AI 생성 (키 필요)
+  generateMaterial: (body: {
+    type: string;
+    subject?: string;
+    grade?: string;
+    difficulty?: string;
+    topic: string;
+  }) => req<{ item: import("../types").Material }>("/api/materials/generate", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }),
+};
+
+// 공용 CRUD (materials/documents/templates/teachers/classes/timetable)
+export const crud = {
+  list: <T,>(path: string) => req<{ items: T[] }>(path),
+  get: <T,>(path: string) => req<{ item: T }>(path),
+  create: <T,>(path: string, body: unknown) =>
+    req<{ item: T }>(path, { method: "POST", body: JSON.stringify(body) }),
+  update: <T,>(path: string, body: unknown) =>
+    req<{ item: T }>(path, { method: "PUT", body: JSON.stringify(body) }),
+  remove: (path: string) => req<{ ok: true }>(path, { method: "DELETE" }),
 };

@@ -24,8 +24,8 @@ const MENU: MenuNode[] = [
     label: "수업 자료",
     icon: "💡",
     items: [
-      { to: "/app/materials/new", label: "학습자료 생성", soon: true },
-      { to: "/app/materials", label: "내 자료함", soon: true },
+      { to: "/app/materials/new", label: "학습자료 생성" },
+      { to: "/app/materials", label: "내 자료함" },
     ],
   },
   {
@@ -33,8 +33,8 @@ const MENU: MenuNode[] = [
     label: "문서 작성",
     icon: "📝",
     items: [
-      { to: "/app/documents", label: "문서 작성", soon: true },
-      { to: "/app/templates", label: "문서 템플릿", soon: true },
+      { to: "/app/documents", label: "문서 작성" },
+      { to: "/app/templates", label: "문서 템플릿" },
     ],
   },
   {
@@ -42,11 +42,11 @@ const MENU: MenuNode[] = [
     label: "시스템 관리",
     icon: "⚙️",
     items: [
-      { to: "/app/teachers", label: "교사 관리", soon: true },
-      { to: "/app/classes", label: "학급·반 관리", soon: true },
-      { to: "/app/timetable", label: "시간표 관리", soon: true },
-      { to: "/app/accounts", label: "계정·권한 관리", soon: true },
-      { to: "/app/system", label: "시스템 현황", soon: true },
+      { to: "/app/teachers", label: "교사 관리" },
+      { to: "/app/classes", label: "학급·반 관리" },
+      { to: "/app/timetable", label: "시간표 관리" },
+      { to: "/app/accounts", label: "계정·권한 관리" },
+      { to: "/app/system", label: "시스템 현황" },
     ],
   },
 ];

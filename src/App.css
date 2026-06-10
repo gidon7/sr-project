@@ -1386,6 +1386,193 @@
   display: none;
 }
 
+/* ===== generate form (수업자료 생성) ===== */
+.gen-form,
+.tpl-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.gen-form label,
+.tpl-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+.gen-form input,
+.gen-form select,
+.tpl-form input,
+.tpl-form textarea {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 400;
+  font-family: inherit;
+}
+.gen-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0.8rem;
+}
+.gen-form input:focus,
+.gen-form select:focus,
+.tpl-form input:focus,
+.tpl-form textarea:focus {
+  outline: none;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--brand-100);
+}
+
+/* filter bar (내 자료함) */
+.filter-bar {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+.filter-bar label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.filter-bar select,
+.filter-bar input {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.92rem;
+  font-weight: 400;
+  min-width: 200px;
+}
+
+/* rendered HTML (material/doc view) */
+.doc-view {
+  line-height: 1.7;
+  color: var(--text);
+}
+.doc-view h2 {
+  font-size: 1.3rem;
+  margin: 0.6rem 0 0.4rem;
+}
+.doc-view h3 {
+  font-size: 1.1rem;
+  margin: 0.8rem 0 0.3rem;
+}
+.doc-view ul,
+.doc-view ol {
+  padding-left: 1.4rem;
+}
+.doc-view li {
+  margin: 0.2rem 0;
+}
+.doc-view table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.6rem 0;
+}
+.doc-view th,
+.doc-view td {
+  border: 1px solid var(--border);
+  padding: 0.5rem 0.7rem;
+  text-align: left;
+}
+.doc-view th {
+  background: var(--bg-soft);
+}
+
+/* rich editor */
+.rt {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+.rt-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.4rem 0.5rem;
+  background: var(--bg-soft);
+  border-bottom: 1px solid var(--border);
+}
+.rt-toolbar button {
+  border: 1px solid transparent;
+  background: none;
+  border-radius: 6px;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.85rem;
+}
+.rt-toolbar button:hover {
+  background: #fff;
+  border-color: var(--border);
+}
+.rt-sep {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 0.3rem;
+}
+.rt-area {
+  min-height: 280px;
+  padding: 1rem;
+  outline: none;
+}
+.tpl-select {
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+  align-self: flex-start;
+}
+
+/* table action buttons */
+.cell-actions {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+}
+.mini-btn {
+  border: 1px solid var(--border);
+  background: #fff;
+  border-radius: 7px;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.82rem;
+  color: var(--brand-600);
+  font-weight: 600;
+}
+.mini-btn:hover {
+  background: var(--brand-50);
+}
+
+/* print (PDF 내보내기) — 본문만 출력 */
+@media print {
+  .sidebar,
+  .topbar,
+  .back-link,
+  .page-header .btn,
+  .editor-actions,
+  .rt-toolbar,
+  .side-backdrop {
+    display: none !important;
+  }
+  .shell {
+    display: block;
+  }
+  .content {
+    padding: 0;
+    max-width: none;
+  }
+  .rt,
+  .panel {
+    border: none;
+    box-shadow: none;
+  }
+}
+
 /* ===== responsive ===== */
 @media (max-width: 860px) {
   .shell {
@@ -1423,6 +1610,13 @@
 @media (max-width: 560px) {
   .module-grid {
     grid-template-columns: 1fr;
+  }
+  .gen-row {
+    grid-template-columns: 1fr;
+  }
+  .filter-bar {
+    flex-direction: column;
+    gap: 0.8rem;
   }
 }
 

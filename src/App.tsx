@@ -12,7 +12,17 @@ import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import StudentPage from "./pages/StudentPage";
 import RecordPage from "./pages/RecordPage";
-import ComingSoon from "./pages/ComingSoon";
+import Materials from "./pages/Materials";
+import MaterialsNew from "./pages/MaterialsNew";
+import MaterialView from "./pages/MaterialView";
+import Documents from "./pages/Documents";
+import DocumentEdit from "./pages/DocumentEdit";
+import Templates from "./pages/Templates";
+import Teachers from "./pages/Teachers";
+import Classes from "./pages/Classes";
+import Timetable from "./pages/Timetable";
+import Accounts from "./pages/Accounts";
+import SystemStatus from "./pages/SystemStatus";
 
 // 공개 페이지용 크롬(상단 내비 + 푸터)
 function PublicChrome() {
@@ -59,30 +69,20 @@ export default function App() {
         <Route path="students/:id" element={<StudentPage />} />
         <Route path="records/:id" element={<RecordPage />} />
 
-        {/* 수업 자료 (P2 예정) */}
-        <Route
-          path="materials/new"
-          element={<ComingSoon title="학습자료 생성" desc="AI로 퀴즈·빈칸채우기·개념 비교표·요약을 생성합니다." phase="P2" />}
-        />
-        <Route
-          path="materials"
-          element={<ComingSoon title="내 자료함" desc="AI로 생성한 수업 자료를 관리합니다." phase="P2" />}
-        />
-        {/* 문서 작성 (P3 예정) */}
-        <Route
-          path="documents"
-          element={<ComingSoon title="문서 작성" desc="위지윅 에디터로 문서를 작성하고 PDF·HWPX로 내보냅니다." phase="P3" />}
-        />
-        <Route
-          path="templates"
-          element={<ComingSoon title="문서 템플릿" desc="자주 쓰는 문서 템플릿을 관리합니다." phase="P3" />}
-        />
-        {/* 시스템 관리 (P4 예정) */}
-        <Route path="teachers" element={<ComingSoon title="교사 관리" phase="P4" />} />
-        <Route path="classes" element={<ComingSoon title="학급·반 관리" phase="P4" />} />
-        <Route path="timetable" element={<ComingSoon title="시간표 관리" phase="P4" />} />
-        <Route path="accounts" element={<ComingSoon title="계정·권한 관리" phase="P4" />} />
-        <Route path="system" element={<ComingSoon title="시스템 현황" phase="P4" />} />
+        {/* 수업 자료 */}
+        <Route path="materials" element={<Materials />} />
+        <Route path="materials/new" element={<MaterialsNew />} />
+        <Route path="materials/:id" element={<MaterialView />} />
+        {/* 문서 작성 */}
+        <Route path="documents" element={<Documents />} />
+        <Route path="documents/:id" element={<DocumentEdit />} />
+        <Route path="templates" element={<Templates />} />
+        {/* 시스템 관리 */}
+        <Route path="teachers" element={<Teachers />} />
+        <Route path="classes" element={<Classes />} />
+        <Route path="timetable" element={<Timetable />} />
+        <Route path="accounts" element={<Accounts />} />
+        <Route path="system" element={<SystemStatus />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" replace />} />
