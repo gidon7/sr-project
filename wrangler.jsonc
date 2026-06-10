@@ -6,6 +6,10 @@
   "compatibility_date": "2025-06-01",
   // Anthropic SDK 등 Node API 호환 (Pages Functions에 적용)
   "compatibility_flags": ["nodejs_compat"],
+  // 비밀이 아닌 환경변수 (분석/생성 모델). API 키는 secret으로 별도 등록.
+  "vars": {
+    "ANTHROPIC_MODEL": "claude-sonnet-4-6"
+  },
   // D1 데이터베이스 바인딩.
   //   1) npx wrangler d1 create sr-project-db
   //   2) 출력된 database_id 를 아래에 붙여넣기

@@ -48,7 +48,8 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
 
     return json({ result });
   } catch (e) {
-    console.error("analyze failed:", e instanceof Error ? e.message : String(e));
-    return json({ error: "분석 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요." }, 502);
+    const msg = e instanceof Error ? e.message : String(e);
+    console.error("analyze failed:", msg);
+    return json({ error: "분석 실패: " + msg }, 502);
   }
 };
