@@ -7,6 +7,7 @@ interface SubItem {
   to: string;
   label: string;
   soon?: boolean;
+  end?: boolean; // 정확 경로 매칭 (상위 경로가 하위와 함께 활성되는 것 방지)
 }
 type MenuNode =
   | { type: "item"; to: string; label: string; icon: string; end?: boolean }
@@ -26,8 +27,8 @@ const MENU: MenuNode[] = [
     label: "수업 자료",
     icon: "💡",
     items: [
-      { to: "/app/materials/new", label: "학습자료 생성" },
-      { to: "/app/materials", label: "내 자료함" },
+      { to: "/app/materials/new", label: "학습자료 생성", end: true },
+      { to: "/app/materials", label: "내 자료함", end: true },
     ],
   },
   {
@@ -118,6 +119,7 @@ export default function AppLayout() {
                       <NavLink
                         key={it.to}
                         to={it.to}
+                        end={it.end}
                         onClick={() => setSideOpen(false)}
                         className={({ isActive }) => "side-sub-item" + (isActive ? " active" : "")}
                       >
