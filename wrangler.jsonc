@@ -7,7 +7,9 @@
   // Anthropic SDK 등 Node API 호환 (Pages Functions에 적용)
   "compatibility_flags": ["nodejs_compat"],
   // 비밀이 아닌 환경변수 (분석/생성 모델). API 키는 secret으로 별도 등록.
+  // OPENAI_API_KEY가 있으면 OpenAI 사용(저렴), 없으면 ANTHROPIC_API_KEY 사용.
   "vars": {
+    "OPENAI_MODEL": "gpt-4o-mini",
     "ANTHROPIC_MODEL": "claude-sonnet-4-6"
   },
   // D1 데이터베이스 바인딩.

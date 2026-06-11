@@ -3,9 +3,9 @@
  * 설계 의도: .claude/skills/saenggibu-analysis/ (SKILL.md 및 references/)
  * 프론트 타입은 src/types.ts 의 AnalysisResult 와 동기화한다.
  */
-import Anthropic from "@anthropic-ai/sdk";
+import type { Env } from "./types";
+import { chatJson } from "./llm";
 
-const DEFAULT_MODEL = "claude-opus-4-8";
 const TOOL_NAME = "submit_saenggibu_analysis";
 
 export const SYSTEM_PROMPT = `당신은 대한민국 대입 학생부종합전형의 입학사정관이자 진학지도 전문가입니다.
@@ -161,38 +161,15 @@ function buildUserMessage({ recordText, targetMajor, grade }: AnalyzeInput): str
 }
 
 /**
- * Anthropic Messages API를 호출해 구조화된 분석 결과(JSON)를 돌려준다.
- * 강제 tool_choice + strict 스키마로 출력을 보장한다(따라서 extended thinking은 사용하지 않음).
+ * 구조화된 생기부 분석 결과(JSON)를 돌려준다.
+ * provider(OpenAI/Anthropic)는 llm.ts가 환경변수로 자동 선택한다.
  */
-export async function runAnalysis(
-  apiKey: string,
-  model: string | undefined,
-  input: AnalyzeInput,
-): Promise<unknown> {
-  const client = new Anthropic({ apiKey });
-
-  // strict + input_schema 형태는 SDK 버전별 타입 경로가 달라 any로 둔다(스키마는 API가 검증).
-  const analysisTool = {
-    name: TOOL_NAME,
-    description: "생기부 분석 결과를 구조화된 형태로 제출한다.",
-    input_schema: ANALYSIS_SCHEMA,
-    strict: true,
-  };
-
-  const message = await client.messages.create({
-    model: model?.trim() || DEFAULT_MODEL,
-    max_tokens: 16000,
+export async function runAnalysis(env: Env, input: AnalyzeInput): Promise<unknown> {
+  return chatJson(env, {
     system: SYSTEM_PROMPT,
-    tools: [analysisTool] as unknown as Anthropic.Tool[],
-    tool_choice: { type: "tool", name: TOOL_NAME },
-    messages: [{ role: "user", content: buildUserMessage(input) }],
+    user: buildUserMessage(input),
+    schema: ANALYSIS_SCHEMA,
+    schemaName: TOOL_NAME,
+    maxTokens: 8000,
   });
-
-  const toolUse = message.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
-  );
-  if (!toolUse) {
-    throw new Error("모델이 분석 결과를 제출하지 않았습니다.");
-  }
-  return toolUse.input;
 }

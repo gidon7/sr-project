@@ -1,6 +1,5 @@
-import Anthropic from "@anthropic-ai/sdk";
-
-const DEFAULT_MODEL = "claude-opus-4-8";
+import type { Env } from "./types";
+import { chatText } from "./llm";
 
 export interface MaterialInput {
   type: "quiz" | "fill_blank" | "compare" | "summary";
@@ -19,14 +18,9 @@ const TYPE_GUIDE: Record<MaterialInput["type"], string> = {
 };
 
 /**
- * Anthropic으로 수업 자료(HTML)를 생성한다. apiKey가 있어야 호출된다(없으면 호출부에서 차단).
+ * 수업 자료(HTML)를 생성한다. provider는 llm.ts가 자동 선택(없으면 호출부에서 차단).
  */
-export async function generateMaterial(
-  apiKey: string,
-  model: string | undefined,
-  input: MaterialInput,
-): Promise<string> {
-  const client = new Anthropic({ apiKey });
+export async function generateMaterial(env: Env, input: MaterialInput): Promise<string> {
   const count = input.count && input.count > 0 ? input.count : 5;
 
   const system = `당신은 대한민국 학교 교사를 돕는 수업 자료 생성 전문가입니다.
@@ -44,18 +38,7 @@ export async function generateMaterial(
 주제/단원: ${input.topic}
 문항/항목 수: 약 ${count}개`;
 
-  const message = await client.messages.create({
-    model: model?.trim() || DEFAULT_MODEL,
-    max_tokens: 8000,
-    system,
-    messages: [{ role: "user", content: user }],
-  });
-
-  const text = message.content
-    .filter((b): b is Anthropic.TextBlock => b.type === "text")
-    .map((b) => b.text)
-    .join("\n")
-    .trim();
+  const text = await chatText(env, { system, user, maxTokens: 8000 });
 
   // 혹시 코드펜스로 감싸면 제거
   return text.replace(/^```html\s*/i, "").replace(/^```\s*/i, "").replace(/```\s*$/i, "").trim();

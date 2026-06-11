@@ -5,6 +5,7 @@ import { getOwnedRecord, paramId } from "../../../_lib/data";
 import { maskPii } from "../../../_lib/pii";
 import { runAnalysis } from "../../../_lib/analysis";
 import { logAudit } from "../../../_lib/audit";
+import { hasLLM } from "../../../_lib/llm";
 
 const MAX_RECORD_CHARS = 30000;
 
@@ -12,8 +13,11 @@ const MAX_RECORD_CHARS = 30000;
 export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }) => {
   const user = await getUser(env, request);
   if (!user) return unauthorized();
-  if (!env.ANTHROPIC_API_KEY) {
-    return json({ error: "서버에 ANTHROPIC_API_KEY가 설정되지 않았습니다." }, 500);
+  if (!hasLLM(env)) {
+    return json(
+      { error: "AI 키(OPENAI_API_KEY 또는 ANTHROPIC_API_KEY)가 설정되지 않았습니다.", needKey: true },
+      503,
+    );
   }
 
   const id = paramId(params.id);
@@ -32,10 +36,12 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
     .bind(record.student_id)
     .first<{ name: string; grade: string | null; target_major: string | null }>();
 
-  const model = env.ANTHROPIC_MODEL?.trim() || "claude-opus-4-8";
+  const modelLabel = env.OPENAI_API_KEY
+    ? env.OPENAI_MODEL?.trim() || "gpt-4o-mini"
+    : env.ANTHROPIC_MODEL?.trim() || "claude-sonnet-4-6";
 
   try {
-    const result = await runAnalysis(env.ANTHROPIC_API_KEY, model, {
+    const result = await runAnalysis(env, {
       recordText: maskPii(raw),
       targetMajor: student?.target_major ?? undefined,
       grade: student?.grade ?? undefined,
@@ -44,7 +50,7 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env, params }
     await env.DB.prepare(
       "INSERT INTO analyses (record_id, model, result_json) VALUES (?, ?, ?)",
     )
-      .bind(id, model, JSON.stringify(result))
+      .bind(id, modelLabel, JSON.stringify(result))
       .run();
 
     await logAudit(env, user.id, "analyze", "records", record.title);
