@@ -24,6 +24,7 @@ import Timetable from "./pages/Timetable";
 import Accounts from "./pages/Accounts";
 import SystemStatus from "./pages/SystemStatus";
 import AuditLog from "./pages/AuditLog";
+import Help from "./pages/Help";
 
 // 공개 페이지용 크롬(상단 내비 + 푸터)
 function PublicChrome() {
@@ -66,6 +67,7 @@ export default function App() {
         }
       >
         <Route index element={<Dashboard />} />
+        <Route path="help" element={<Help />} />
         <Route path="students" element={<Students />} />
         <Route path="students/:id" element={<StudentPage />} />
         <Route path="records/:id" element={<RecordPage />} />

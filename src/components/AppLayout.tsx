@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import ErrorBoundary from "./ErrorBoundary";
 
@@ -14,6 +14,7 @@ type MenuNode =
 
 const MENU: MenuNode[] = [
   { type: "item", to: "/app", label: "대시보드", icon: "🏠", end: true },
+  { type: "item", to: "/app/help", label: "사용 안내", icon: "📖", end: false },
   {
     type: "group",
     label: "생기부 분석",
@@ -140,6 +141,9 @@ export default function AppLayout() {
             ☰
           </button>
           <div className="topbar-right">
+            <Link to="/app/help" className="bell" title="사용 안내" style={{ textDecoration: "none" }}>
+              ❓
+            </Link>
             <button className="bell" title="알림">
               🔔
             </button>
