@@ -75,6 +75,7 @@ async function openaiJson(env: Env, o: JsonOpts): Promise<unknown> {
       type: "json_schema",
       json_schema: { name: o.schemaName, strict: true, schema: o.schema },
     },
+    temperature: 0.3,
     max_tokens: o.maxTokens ?? 4000,
   });
   return JSON.parse(content);
@@ -86,6 +87,7 @@ async function openaiText(env: Env, o: TextOpts): Promise<string> {
       { role: "system", content: o.system },
       { role: "user", content: o.user },
     ],
+    temperature: 0.3,
     max_tokens: o.maxTokens ?? 4000,
   });
 }

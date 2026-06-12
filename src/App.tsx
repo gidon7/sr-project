@@ -25,6 +25,8 @@ import Accounts from "./pages/Accounts";
 import SystemStatus from "./pages/SystemStatus";
 import AuditLog from "./pages/AuditLog";
 import Help from "./pages/Help";
+import Privacy from "./pages/Privacy";
+import RefineTool from "./pages/RefineTool";
 
 // 공개 페이지용 크롬(상단 내비 + 푸터)
 function PublicChrome() {
@@ -56,6 +58,7 @@ export default function App() {
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/privacy" element={<Privacy />} />
       </Route>
 
       <Route
@@ -68,6 +71,7 @@ export default function App() {
       >
         <Route index element={<Dashboard />} />
         <Route path="help" element={<Help />} />
+        <Route path="refine" element={<RefineTool />} />
         <Route path="students" element={<Students />} />
         <Route path="students/:id" element={<StudentPage />} />
         <Route path="records/:id" element={<RecordPage />} />

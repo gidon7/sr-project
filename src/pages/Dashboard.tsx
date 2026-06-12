@@ -6,7 +6,13 @@ import type { Student } from "../types";
 export default function Dashboard() {
   const [students, setStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showIntro, setShowIntro] = useState(() => localStorage.getItem("sr_onboard_done") !== "1");
   const navigate = useNavigate();
+
+  function dismissIntro() {
+    localStorage.setItem("sr_onboard_done", "1");
+    setShowIntro(false);
+  }
 
   useEffect(() => {
     api
@@ -28,6 +34,22 @@ export default function Dashboard() {
 
   return (
     <>
+      {showIntro && (
+        <div className="intro-card">
+          <div className="intro-text">
+            <b>👋 처음 오셨나요?</b> 4단계만 따라 하면 됩니다 — 학생 등록 → 생기부 입력 → AI 분석 → 리포트.
+          </div>
+          <div className="intro-actions">
+            <Link to="/app/help" className="btn btn-primary btn-sm">
+              사용 안내 보기
+            </Link>
+            <button className="btn btn-ghost btn-sm" onClick={dismissIntro}>
+              닫기
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="page-header">
         <div>
           <h1 className="page-title">대시보드</h1>

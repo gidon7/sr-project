@@ -20,7 +20,10 @@ const MENU: MenuNode[] = [
     type: "group",
     label: "생기부 분석",
     icon: "📊",
-    items: [{ to: "/app/students", label: "학생 관리" }],
+    items: [
+      { to: "/app/students", label: "학생 관리" },
+      { to: "/app/refine", label: "생기부 윤문" },
+    ],
   },
   {
     type: "group",

@@ -58,6 +58,13 @@ export const api = {
       `/api/records/${id}/analyses`,
     ),
 
+  // 생기부 윤문(다듬기)
+  refine: (text: string, maxBytes?: number) =>
+    req<{ refined: string }>("/api/refine", {
+      method: "POST",
+      body: JSON.stringify({ text, maxBytes }),
+    }),
+
   // 수업 자료 AI 생성 (키 필요)
   generateMaterial: (body: {
     type: string;

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { crud } from "../lib/api";
 import { MATERIAL_TYPE_LABELS, type Material } from "../types";
+import CopyButton from "../components/CopyButton";
+import AiDraftNotice from "../components/AiDraftNotice";
 
 export default function MaterialView() {
   const { id } = useParams();
@@ -48,11 +50,15 @@ export default function MaterialView() {
             {item.subject || ""} {item.grade || ""} {item.difficulty || ""}
           </p>
         </div>
-        <button className="btn btn-ghost" onClick={() => window.print()}>
-          🖨 인쇄/PDF
-        </button>
+        <div className="header-actions">
+          <CopyButton text={item.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()} label="내용 복사" />
+          <button className="btn btn-ghost" onClick={() => window.print()}>
+            🖨 인쇄/PDF
+          </button>
+        </div>
       </div>
 
+      <AiDraftNotice />
       <div className="panel doc-view" dangerouslySetInnerHTML={{ __html: item.content }} />
     </>
   );

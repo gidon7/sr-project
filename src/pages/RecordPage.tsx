@@ -4,6 +4,7 @@ import { api } from "../lib/api";
 import type { AnalysisResult, Student } from "../types";
 import Report from "../components/Report";
 import TextChecker from "../components/TextChecker";
+import AiDraftNotice from "../components/AiDraftNotice";
 import { LIMIT_PRESETS } from "../lib/saenggibuRules";
 import { extractTextFromFile } from "../lib/fileText";
 
@@ -185,6 +186,7 @@ export default function RecordPage() {
               🖨 리포트 PDF
             </button>
           </div>
+          <AiDraftNotice />
           <Report data={result} />
         </>
       )}
