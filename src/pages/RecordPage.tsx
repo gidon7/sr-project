@@ -5,6 +5,7 @@ import type { AnalysisResult, Student } from "../types";
 import Report from "../components/Report";
 import TextChecker from "../components/TextChecker";
 import AiDraftNotice from "../components/AiDraftNotice";
+import MicButton from "../components/MicButton";
 import { LIMIT_PRESETS } from "../lib/saenggibuRules";
 import { extractTextFromFile } from "../lib/fileText";
 
@@ -129,6 +130,7 @@ export default function RecordPage() {
           >
             {uploading ? "불러오는 중…" : "📎 파일 불러오기"}
           </button>
+          <MicButton onText={(t) => setContent((p) => (p ? p + " " + t : t))} />
           <input
             ref={fileRef}
             type="file"

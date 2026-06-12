@@ -65,6 +65,17 @@ export const api = {
       body: JSON.stringify({ text, maxBytes }),
     }),
 
+  // 세특/행특/창체/진로 문구 생성
+  generateRemark: (body: { type: string; subject?: string; keywords: string; maxBytes?: number }) =>
+    req<{ text: string }>("/api/remark", { method: "POST", body: JSON.stringify(body) }),
+
+  // 행정 문서 AI 초안
+  draftDoc: (docType: string, content: string) =>
+    req<{ html: string }>("/api/doc-draft", {
+      method: "POST",
+      body: JSON.stringify({ docType, content }),
+    }),
+
   // 수업 자료 AI 생성 (키 필요)
   generateMaterial: (body: {
     type: string;

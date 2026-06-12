@@ -27,6 +27,7 @@ import AuditLog from "./pages/AuditLog";
 import Help from "./pages/Help";
 import Privacy from "./pages/Privacy";
 import RefineTool from "./pages/RefineTool";
+import RemarkTool from "./pages/RemarkTool";
 
 // 공개 페이지용 크롬(상단 내비 + 푸터)
 function PublicChrome() {
@@ -72,6 +73,7 @@ export default function App() {
         <Route index element={<Dashboard />} />
         <Route path="help" element={<Help />} />
         <Route path="refine" element={<RefineTool />} />
+        <Route path="remark" element={<RemarkTool />} />
         <Route path="students" element={<Students />} />
         <Route path="students/:id" element={<StudentPage />} />
         <Route path="records/:id" element={<RecordPage />} />

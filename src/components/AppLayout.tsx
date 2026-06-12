@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth";
 import ErrorBoundary from "./ErrorBoundary";
@@ -22,6 +22,7 @@ const MENU: MenuNode[] = [
     icon: "📊",
     items: [
       { to: "/app/students", label: "학생 관리" },
+      { to: "/app/remark", label: "생기부 문구 생성" },
       { to: "/app/refine", label: "생기부 윤문" },
     ],
   },
@@ -64,6 +65,12 @@ export default function AppLayout() {
   const { pathname } = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [sideOpen, setSideOpen] = useState(false);
+  const [bigText, setBigText] = useState(() => localStorage.getItem("sr_bigtext") === "1");
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("bigtext", bigText);
+    localStorage.setItem("sr_bigtext", bigText ? "1" : "0");
+  }, [bigText]);
 
   // 현재 경로가 포함된 그룹은 기본으로 펼침
   const initialOpen = useMemo(() => {
@@ -146,6 +153,14 @@ export default function AppLayout() {
             ☰
           </button>
           <div className="topbar-right">
+            <button
+              className="bell"
+              title="글씨 크기"
+              onClick={() => setBigText((v) => !v)}
+              style={{ fontWeight: 700 }}
+            >
+              {bigText ? "가⁻" : "가⁺"}
+            </button>
             <Link to="/app/help" className="bell" title="사용 안내" style={{ textDecoration: "none" }}>
               ❓
             </Link>

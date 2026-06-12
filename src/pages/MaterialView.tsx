@@ -4,6 +4,7 @@ import { crud } from "../lib/api";
 import { MATERIAL_TYPE_LABELS, type Material } from "../types";
 import CopyButton from "../components/CopyButton";
 import AiDraftNotice from "../components/AiDraftNotice";
+import { downloadWord } from "../lib/wordExport";
 
 export default function MaterialView() {
   const { id } = useParams();
@@ -52,6 +53,9 @@ export default function MaterialView() {
         </div>
         <div className="header-actions">
           <CopyButton text={item.content.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()} label="내용 복사" />
+          <button className="btn btn-ghost btn-sm" onClick={() => downloadWord(item.title, item.content, item.title)}>
+            ⬇ Word
+          </button>
           <button className="btn btn-ghost" onClick={() => window.print()}>
             🖨 인쇄/PDF
           </button>

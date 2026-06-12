@@ -7,8 +7,12 @@ import TextChecker from "../components/TextChecker";
 import { LIMIT_PRESETS } from "../lib/saenggibuRules";
 import { downloadWord, textToHtml } from "../lib/wordExport";
 
-export default function RefineTool() {
-  const [text, setText] = useState("");
+const TYPES = ["세특", "행특", "창체", "진로"];
+
+export default function RemarkTool() {
+  const [type, setType] = useState("세특");
+  const [subject, setSubject] = useState("");
+  const [keywords, setKeywords] = useState("");
   const [maxBytes, setMaxBytes] = useState(1500);
   const [result, setResult] = useState("");
   const [busy, setBusy] = useState(false);
@@ -20,8 +24,8 @@ export default function RefineTool() {
     setBusy(true);
     setResult("");
     try {
-      const d = await api.refine(text, maxBytes || undefined);
-      setResult(d.refined);
+      const d = await api.generateRemark({ type, subject, keywords, maxBytes: maxBytes || undefined });
+      setResult(d.text);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -33,25 +37,29 @@ export default function RefineTool() {
     <>
       <div className="page-header">
         <div>
-          <h1 className="page-title">생기부 윤문</h1>
+          <h1 className="page-title">생기부 문구 생성</h1>
           <p className="page-desc">
-            교사가 쓴 초안을 NEIS 기재 방식으로 다듬어 드립니다. 없는 사실은 만들지 않습니다.
+            관찰한 키워드만 입력하면 세특·행특·창체·진로 문구를 만들어 드립니다.
           </p>
         </div>
       </div>
 
       <form className="panel record-editor" onSubmit={run}>
-        <div className="editor-top">
-          <span style={{ fontSize: "0.88rem", fontWeight: 600 }}>초안</span>
-          <MicButton onText={(t) => setText((p) => (p ? p + " " + t : t))} />
-        </div>
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          rows={8}
-          placeholder="다듬고 싶은 초안을 입력하세요. 예: 화학 시간에 중화반응 실험을 했고 결과를 보고서로 정리함. 친구들 도와줌."
-        />
-        <div className="checker-bar">
+        <div className="gen-row">
+          <label>
+            항목
+            <select value={type} onChange={(e) => setType(e.target.value)}>
+              {TYPES.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label>
+            과목 <span className="opt">(선택)</span>
+            <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="예: 과학" />
+          </label>
           <label>
             기재 기준
             <select value={maxBytes} onChange={(e) => setMaxBytes(Number(e.target.value))}>
@@ -62,12 +70,21 @@ export default function RefineTool() {
               ))}
             </select>
           </label>
-          <span className="checker-note">※ 명사형 어미·금칙어 배제·byte 이내로 다듬습니다</span>
         </div>
+        <div className="editor-top">
+          <span style={{ fontSize: "0.88rem", fontWeight: 600 }}>키워드 / 관찰 내용</span>
+          <MicButton onText={(t) => setKeywords((p) => (p ? p + " " + t : t))} />
+        </div>
+        <textarea
+          value={keywords}
+          onChange={(e) => setKeywords(e.target.value)}
+          rows={5}
+          placeholder="예: 중화반응 실험 적극 참여, 보고서 꼼꼼히 정리, 친구 도와줌, 추가 자료 조사"
+        />
         {error && <div className="error-banner">⚠️ {error}</div>}
         <div className="editor-actions">
-          <button className="btn btn-primary" disabled={busy || text.trim().length < 10}>
-            {busy ? "다듬는 중…" : "✨ 다듬기"}
+          <button className="btn btn-primary" disabled={busy || keywords.trim().length < 4}>
+            {busy ? "생성 중…" : "✨ 문구 생성"}
           </button>
         </div>
       </form>
@@ -86,7 +103,7 @@ export default function RefineTool() {
           <div className="editor-actions" style={{ marginTop: "0.6rem" }}>
             <button
               className="btn btn-ghost btn-sm"
-              onClick={() => downloadWord("생기부_윤문", textToHtml("생기부 윤문", result), "생기부 윤문")}
+              onClick={() => downloadWord(`${type}_문구`, textToHtml(`${type} 문구`, result), `${type} 문구`)}
             >
               ⬇ Word
             </button>

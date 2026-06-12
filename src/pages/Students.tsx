@@ -15,6 +15,7 @@ export default function Students() {
   const [targetMajor, setTargetMajor] = useState("");
   const [adding, setAdding] = useState(false);
   const [importing, setImporting] = useState(false);
+  const [query, setQuery] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
@@ -138,6 +139,19 @@ export default function Students() {
 
       {error && <div className="error-banner">⚠️ {error}</div>}
 
+      {students.length > 0 && (
+        <div className="panel filter-bar">
+          <label>
+            검색
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="이름·희망전공 검색..."
+            />
+          </label>
+        </div>
+      )}
+
       <div className="panel">
         {loading ? (
           <div className="loading">
@@ -145,7 +159,13 @@ export default function Students() {
           </div>
         ) : students.length === 0 ? (
           <div className="empty">아직 등록된 학생이 없습니다. ‘새 학생 만들기’로 추가하세요.</div>
-        ) : (
+        ) : (() => {
+          const filtered = students.filter(
+            (s) => !query || s.name.includes(query) || (s.target_major ?? "").includes(query),
+          );
+          return filtered.length === 0 ? (
+            <div className="empty">검색 결과가 없습니다.</div>
+          ) : (
           <table className="data-table">
             <thead>
               <tr>
@@ -158,7 +178,7 @@ export default function Students() {
               </tr>
             </thead>
             <tbody>
-              {students.map((s) => (
+              {filtered.map((s) => (
                 <tr key={s.id} className="row-click" onClick={() => navigate(`/app/students/${s.id}`)}>
                   <td className="cell-strong">{s.name}</td>
                   <td>{s.grade || "—"}</td>
@@ -176,7 +196,8 @@ export default function Students() {
               ))}
             </tbody>
           </table>
-        )}
+          );
+        })()}
       </div>
     </>
   );
